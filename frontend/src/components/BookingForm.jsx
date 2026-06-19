@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import { SERVICE_TYPES } from '../constants/services';
-import { generateTimeSlots, formatTimeLabel } from '../utils/timeSlots';
+import { generateTimeSlots, formatTimeLabel } from '../Utils/timeSlots';
 
 const allSlots = generateTimeSlots();
 

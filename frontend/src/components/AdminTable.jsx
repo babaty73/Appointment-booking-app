@@ -1,4 +1,4 @@
-import { formatTimeLabel } from '../utils/timeSlots';
+import { formatTimeLabel } from '../Utils/timeSlots';
 
 const statusStyles = {
   pending: 'bg-yellow-100 text-yellow-700 border-yellow-300',
