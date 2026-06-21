@@ -11,6 +11,8 @@ const AdminDashboard = () => {
   const [error, setError] = useState('');
   const [filters, setFilters] = useState({ date: '', status: '', service: '' });
   const [selectedDate, setSelectedDate] = useState('');
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [confirmDeleteItem, setConfirmDeleteItem] = useState(null);
 
   const fetchAppointments = useCallback(async () => {
     setLoading(true);
@@ -39,11 +41,21 @@ const AdminDashboard = () => {
     }
   };
 
+  const requestDelete = (appointment) => {
+    setConfirmDeleteId(appointment._id);
+    setConfirmDeleteItem(appointment);
+  };
+
+  const cancelDelete = () => {
+    setConfirmDeleteId(null);
+    setConfirmDeleteItem(null);
+  };
+
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this appointment?')) return;
     try {
       await api.delete(`/appointments/${id}`);
       setAppointments((prev) => prev.filter((a) => a._id !== id));
+      cancelDelete();
     } catch (err) {
       alert('Failed to delete appointment.', err);
     }
@@ -93,8 +105,36 @@ const AdminDashboard = () => {
             <AdminTable
               appointments={filteredAppointments}
               onStatusChange={handleStatusChange}
-              onDelete={handleDelete}
+              onDelete={requestDelete}
             />
+            {confirmDeleteId && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4 py-6">
+                <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border border-gray-200">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-3">Confirm delete</h2>
+                  <p className="text-gray-600 mb-5">
+                    Are you sure you want to delete the appointment for{' '}
+                    <span className="font-semibold text-gray-900">{confirmDeleteItem?.name}</span> on{' '}
+                    <span className="font-semibold text-gray-900">{confirmDeleteItem?.date}</span>?
+                  </p>
+                  <div className="flex justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={cancelDelete}
+                      className="rounded-xl border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(confirmDeleteId)}
+                      className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
